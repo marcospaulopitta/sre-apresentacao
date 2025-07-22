@@ -75,12 +75,7 @@ jobs:
           cd terraform
           terraform workspace select ${{ inputs.environment }} || terraform workspace new ${{ inputs.environment }}
           terraform apply -auto-approve "${{ inputs.environment }}.plan"
-      - name: EXECUTANDO O TERRAFORM
-        id: terraform_apply
-        run: |
-          cd terraform
-          terraform workspace select ${{ inputs.environment }} || terraform workspace new ${{ inputs.environment }}
-          terraform apply -auto-approve "${{ inputs.environment }}.plan"
+
       - name: CONFIGURAÇÃO DO AWS CLI
         uses: aws-actions/configure-aws-credentials@v4
         with:
