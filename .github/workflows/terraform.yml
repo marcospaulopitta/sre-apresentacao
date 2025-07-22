@@ -27,19 +27,19 @@ jobs:
 
     steps:
       - name: CHECKOUT DO REPOSITÓRIO
-        uses: actions/checkout@v4
+        uses: actions/checkout@v2
 
       - name: CONFIGURANDO TERRAFORM
-        uses: hashicorp/setup-terraform@v3
+        uses: hashicorp/setup-terraform@v1
         with:
           terraform_version: 1.12.1
 
-      - name: CONFIGURANDO AWS CLI
+      - name: CONFIGURAÇÃO DO AWS CLI
         uses: aws-actions/configure-aws-credentials@v2
         with:
+          aws-region: sa-east-1
           aws-access-key-id: ${{ secrets.AWS_CHAVE_ACESSO }}
           aws-secret-access-key: ${{ secrets.AWS_CHAVE_ACESSO_SECRETA }}
-          aws-region: ${{ inputs.aws-region }}
 
       - name: INICIALIZANDO TERRAFORM
         run: |
