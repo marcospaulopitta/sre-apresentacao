@@ -4,7 +4,9 @@ on:
   workflow_call:
     inputs:
       environment:
-        description: "The environment to deploy to"
+        type: string
+        required: true
+      aws-assume-role-arn:
         type: string
         required: true
       aws-statefile-s3-bucket:
@@ -34,11 +36,11 @@ jobs:
         with:
           terraform_version: 1.12.1
 
-      - name: CONFIGURANDO AWS CLI
+      - name: CONFIGURAÇÃO DO AWS CLI
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-access-key-id: ${{ secrets.AWS_CHAVE_ACESSO }}
-          aws-secret-access-key: ${{ secrets.AWS_CHAVE_ACESSO_SECRETA }}
+          role-to-assume: ${{ inputs.aws-assume-role-arn }}
+          role-session-name: GiiHubv_to_AWS_via_FederatedOIDC
           aws-region: ${{ inputs.aws-region }}
 
       - name: INICIALIZANDO TERRAFORM
@@ -67,4 +69,4 @@ jobs:
         run: |
           cd terraform
           terraform workspace select ${{ inputs.environment }} || terraform workspace new ${{ inputs.environment }}
-          terraform apply "${{ inputs.environment }}.plan" -auto-approve
+          terraform apply -auto-approve "${{ inputs.environment }}.plan"
