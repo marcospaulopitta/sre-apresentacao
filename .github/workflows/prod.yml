@@ -3,7 +3,7 @@ name: "Provisionamento em Prod"
 on:
   push:
     branches:
-      - Producao
+      - producao
 
 jobs:
   terraform:
