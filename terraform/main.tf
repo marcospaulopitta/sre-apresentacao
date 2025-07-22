@@ -1,5 +1,12 @@
+resource "random_id" "bucket_suffix" {
+  byte_length = 4
+  keepers = {
+    always_new = timestamp()
+  }
+}
+
 locals {
-  bucket_name = "${var.prefixo}-${random_integer.bucket_suffix.result}"
+  bucket_name = "${var.prefixo}-${random_id.bucket_suffix.hex}"
 }
 
 resource "aws_s3_bucket" "bucket" {
