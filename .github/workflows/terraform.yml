@@ -69,4 +69,4 @@ jobs:
         run: |
           cd terraform
           terraform workspace select ${{ inputs.environment }} || terraform workspace new ${{ inputs.environment }}
-          terraform apply "${{ inputs.environment }}.plan" -auto-approve
+          terraform apply -auto-approve "${{ inputs.environment }}.plan"
