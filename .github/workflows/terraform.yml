@@ -44,6 +44,10 @@ jobs:
           role-session-name: GiiHubv_to_AWS_via_FederatedOIDC
           aws-region: ${{ inputs.aws-region }}
 
+      - name: LIMPAR BUCKET DE STATEFILE
+        run: |
+          aws s3 rm s3://${{ inputs.aws-statefile-s3-bucket }} --recursive
+
       - name: INICIALIZANDO TERRAFORM
         run: |
           cd terraform  
@@ -52,10 +56,6 @@ jobs:
             -backend-config="key=${{ inputs.environment }}/terraform.tfstate" \
             -backend-config="dynamodb_table=${{ inputs.aws-lock-dynamodb-table }}" \
             -backend-config="region=${{ inputs.aws-region }}"
-
-      - name: LIMPAR BUCKET DE STATEFILE
-        run: |
-          aws s3 rm s3://${{ inputs.aws-statefile-s3-bucket }} --recursive
 
       - name: VALIDAÇÃO DO TERRAFORM
         run: |
