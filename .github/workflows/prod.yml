@@ -5,11 +5,16 @@ on:
     branches:
       - producao
 
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   terraform:
     uses: ./.github/workflows/terraform.yml
     with:
-      environment: "Prod"
+      environment: "prod"
       aws-region: "sa-east-1"
+      aws-assume-role-arn: "arn:aws:iam::269519942317:role/github_acctions"
       aws-statefile-s3-bucket: "bucket-armazenamento-terraform"
       aws-lock-dynamodb-table: "tabela_bloqueio_execucao"
