@@ -1,0 +1,15 @@
+name: "Provisionamento em Prod"
+
+on:
+  push:
+    branches:
+      - Producao
+
+jobs:
+  terraform:
+    uses: ./.github/workflows/terraform.yml
+    with:
+      environment: "Prod"
+      aws-region: "sa-east-1"
+      aws-statefile-s3-bucket: "bucket-armazenamento-terraform"
+      aws-lock-dynamodb-table: "tabela_bloqueio_execucao"

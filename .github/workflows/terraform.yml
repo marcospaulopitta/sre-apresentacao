@@ -1,0 +1,70 @@
+name: "PIPELINE: Terraform"
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        description: "The environment to deploy to"
+        type: string
+        required: true
+      aws-statefile-s3-bucket:
+        type: string
+        required: true
+      aws-lock-dynamodb-table:
+        type: string
+        required: true
+      aws-region:
+        type: string
+        required: true
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - name: CHECKOUT DO REPOSITÓRIO
+        uses: actions/checkout@v4
+
+      - name: CONFIGURANDO TERRAFORM
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.12.1
+
+      - name: CONFIGURANDO AWS CLI
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_CHAVE_ACESSO }}
+          aws-secret-access-key: ${{ secrets.AWS_CHAVE_ACESSO_SECRETA }}
+          aws-region: ${{ inputs.aws-region }}
+
+      - name: INICIALIZANDO TERRAFORM
+        run: |
+          cd terraform  
+          terraform init \
+            -backend-config="bucket=${{ inputs.aws-statefile-s3-bucket }}" \
+            -backend-config="key=${{ inputs.environment }}/terraform.tfstate" \
+            -backend-config="dynamodb_table=${{ inputs.aws-lock-dynamodb-table }}" \
+            -backend-config="region=${{ inputs.aws-region }}"
+
+      - name: VALIDAÇÃO DO TERRAFORM
+        run: |
+          cd terraform
+          terraform validate
+
+      - name: PLANJAMENTO DO TERRAFORM
+        id: terraform_plan
+        run: |
+          cd terraform
+          terraform workspace select ${{ inputs.environment }} || terraform workspace new ${{ inputs.environment }} &&
+            terraform plan -var-file="./ambientes/${{ inputs.environment }}/terraform.tfvars" -out=${{ inputs.environment }}.plan
+
+      - name: EXECUTANDO O TERRAFORM
+        id: terraform_apply
+        run: |
+          cd terraform
+          terraform workspace select ${{ inputs.environment }} || terraform workspace new ${{ inputs.environment }}
+          terraform apply "${{ inputs.environment }}.plan" -auto-approve
