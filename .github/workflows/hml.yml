@@ -1,9 +1,13 @@
-name: "Provisionamento em Hml"
+name: "Provisionamento em hml"
 
 on:
   push:
     branches:
-      - homologacao
+      - homlogacao
+
+permissions:
+  id-token: write
+  contents: read
 
 permissions:
   id-token: write
