@@ -1,7 +1,4 @@
-resource "random_id" "bucket_suffix" {
-  byte_length = 4
-
-  keepers = {
-    always_new = timestamp()
-  }
+resource "random_integer" "bucket_suffix" {
+  min = 1000
+  max = 9999
 }
