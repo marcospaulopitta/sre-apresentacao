@@ -58,11 +58,6 @@ jobs:
             -backend-config="dynamodb_table=${{ inputs.aws-lock-dynamodb-table }}" \
             -backend-config="region=${{ inputs.aws-region }}"
 
-      - name: LIMPAR BUCKET DE STATEFILE (opcional)
-        if: ${{ github.event.inputs.clean_statefile_bucket == 'true' }}
-        run: |
-          aws s3 rm s3://${{ inputs.aws-statefile-s3-bucket }} --recursive
-
       - name: VALIDAÇÃO DO TERRAFORM
         run: |
           cd terraform
@@ -81,6 +76,11 @@ jobs:
           cd terraform
           terraform workspace select ${{ inputs.environment }} || terraform workspace new ${{ inputs.environment }}
           terraform apply -auto-approve "${{ inputs.environment }}.plan"
+
+  clean-statefile-bucket:
+    if: ${{ github.event.inputs.clean_statefile_bucket == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
       - name: CONFIGURAÇÃO DO AWS CLI
         uses: aws-actions/configure-aws-credentials@v4
         with:
