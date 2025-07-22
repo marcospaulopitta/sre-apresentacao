@@ -4,7 +4,9 @@ on:
   workflow_call:
     inputs:
       environment:
-        description: "The environment to deploy to"
+        type: string
+        required: true
+      aws-assume-role-arn:
         type: string
         required: true
       aws-statefile-s3-bucket:
@@ -27,19 +29,19 @@ jobs:
 
     steps:
       - name: CHECKOUT DO REPOSITÓRIO
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: CONFIGURANDO TERRAFORM
-        uses: hashicorp/setup-terraform@v1
+        uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: 1.12.1
 
       - name: CONFIGURAÇÃO DO AWS CLI
-        uses: aws-actions/configure-aws-credentials@v3
+        uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-region: sa-east-1
-          aws-access-key-id: ${{ secrets.AWS_CHAVE_ACESSO }}
-          aws-secret-access-key: ${{ secrets.AWS_CHAVE_ACESSO_SECRETA }}
+          aws-role-to-assume: ${{ imputs.aws-assume-role-arn }}
+          aws-role-session-name: GiiHubv_to_AWS_via_FederatedOIDC
+          aws-region: ${{ inputs.aws-region }}
 
       - name: INICIALIZANDO TERRAFORM
         run: |
