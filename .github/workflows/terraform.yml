@@ -18,12 +18,6 @@ on:
       aws-region:
         type: string
         required: true
-  workflow_dispatch:
-    inputs:
-      clean_statefile_bucket:
-        description: "Limpar bucket de statefile do Terraform?"
-        required: false
-        default: "false"
 
 jobs:
   terraform:
@@ -76,18 +70,3 @@ jobs:
           cd terraform
           terraform workspace select ${{ inputs.environment }} || terraform workspace new ${{ inputs.environment }}
           terraform apply -auto-approve "${{ inputs.environment }}.plan"
-
-  clean-statefile-bucket:
-    if: ${{ github.event.inputs.clean_statefile_bucket == 'true' }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: CONFIGURAÇÃO DO AWS CLI
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: ${{ inputs.aws-assume-role-arn }}
-          role-session-name: Github_Clean_Statefile
-          aws-region: ${{ inputs.aws-region }}
-
-      - name: LIMPAR BUCKET DE STATEFILE
-        run: |
-          aws s3 rm s3://${{ inputs.aws-statefile-s3-bucket }} --recursive
