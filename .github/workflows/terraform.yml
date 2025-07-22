@@ -39,8 +39,8 @@ jobs:
       - name: CONFIGURAÇÃO DO AWS CLI
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-role-to-assume: ${{ inputs.aws-assume-role-arn }}
-          aws-role-session-name: GiiHubv_to_AWS_via_FederatedOIDC
+          role-to-assume: ${{ inputs.aws-assume-role-arn }}
+          role-session-name: GiiHubv_to_AWS_via_FederatedOIDC
           aws-region: ${{ inputs.aws-region }}
 
       - name: INICIALIZANDO TERRAFORM
