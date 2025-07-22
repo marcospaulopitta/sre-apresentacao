@@ -19,11 +19,6 @@ on:
         type: string
         required: true
   workflow_dispatch:
-    inputs:
-      clean_statefile_bucket:
-        description: "Limpar bucket de statefile do Terraform?"
-        required: false
-        default: "false"
 
 jobs:
   terraform:
@@ -58,8 +53,7 @@ jobs:
             -backend-config="dynamodb_table=${{ inputs.aws-lock-dynamodb-table }}" \
             -backend-config="region=${{ inputs.aws-region }}"
 
-      - name: LIMPAR BUCKET DE STATEFILE (opcional)
-        if: ${{ github.event.inputs.clean_statefile_bucket == 'true' }}
+      - name: LIMPAR BUCKET DE STATEFILE
         run: |
           aws s3 rm s3://${{ inputs.aws-statefile-s3-bucket }} --recursive
 
@@ -75,6 +69,12 @@ jobs:
           terraform workspace select ${{ inputs.environment }} || terraform workspace new ${{ inputs.environment }} &&
             terraform plan -var-file="./ambientes/${{ inputs.environment }}/terraform.tfvars" -out=${{ inputs.environment }}.plan
 
+      - name: EXECUTANDO O TERRAFORM
+        id: terraform_apply
+        run: |
+          cd terraform
+          terraform workspace select ${{ inputs.environment }} || terraform workspace new ${{ inputs.environment }}
+          terraform apply -auto-approve "${{ inputs.environment }}.plan"
       - name: EXECUTANDO O TERRAFORM
         id: terraform_apply
         run: |
