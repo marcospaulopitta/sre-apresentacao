@@ -11,5 +11,6 @@ jobs:
     with:
       environment: "Prod"
       aws-region: "sa-east-1"
+      aws-assume-role-arn: "arn:aws:iam::269519942317:role/github_acctions"
       aws-statefile-s3-bucket: "bucket-armazenamento-terraform"
       aws-lock-dynamodb-table: "tabela_bloqueio_execucao"
